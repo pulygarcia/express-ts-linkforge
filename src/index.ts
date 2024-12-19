@@ -1,9 +1,18 @@
 import express from 'express'
+import dotenv from 'dotenv'
+import { db } from './config/db';
 
 import authRoutes from './routes/authRoutes'
 
+//allow reading enviornment variables
+dotenv.config();
+
 const app = express();
 
+app.use(express.json()); //allow json format
+
+//db connection
+db();
 
 //Routes
 app.use('/api/auth', authRoutes);
