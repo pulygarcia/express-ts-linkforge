@@ -1,12 +1,20 @@
 import mongoose, {Schema} from "mongoose";
 
 interface IUser {
+    handle: string
     name: string
     email: string
     password: string
 }
 
 export const UserSchema:Schema = new mongoose.Schema({
+    handle: {
+        type: String,
+        required: true,
+        trim: true,
+        unique: true,
+        lowercase: true
+    },
     name: {
         type: String,
         required: true,
@@ -16,7 +24,8 @@ export const UserSchema:Schema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        unique: true
+        unique: true,
+        lowercase: true
     },
     password: {
         type: String,
