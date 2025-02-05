@@ -1,18 +1,24 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import { db } from './config/db';
+import cors from 'cors'
 
 import authRoutes from './routes/authRoutes'
+import { corsConfig } from './config/cors';
 
 //allow reading enviornment variables
 dotenv.config();
 
+//db connection
+db();
+
 const app = express();
+
+//Cors
+app.use(cors(corsConfig));
 
 app.use(express.json()); //allow json format
 
-//db connection
-db();
 
 //Routes
 app.use('/api/auth', authRoutes);

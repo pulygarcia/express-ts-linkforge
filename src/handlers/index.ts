@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import { validationResult } from "express-validator";
+import { createJWT } from "../utils/jwt";
 import slug from "slug";
 import User from "../schemas/User.model";
 import { hashPassword, checkPassword } from "../utils/auth";
@@ -86,7 +86,10 @@ export const login = async (req:Request, res:Response) => {
         })
     }
 
+    const userToken = createJWT({id: user._id})
+
     res.json({
-        msg: 'Welcome ' + user.handle
+        msg: `Welcome ${user.handle}`,
+        token: userToken
     });
 }
