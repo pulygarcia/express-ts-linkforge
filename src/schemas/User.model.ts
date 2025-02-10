@@ -5,6 +5,7 @@ interface IUser {
     name: string
     email: string
     password: string
+    description: string
 }
 
 export const UserSchema:Schema = new mongoose.Schema({
@@ -31,6 +32,10 @@ export const UserSchema:Schema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true
+    },
+    description: {
+        type: String,
+        default: ''
     },
 })
 

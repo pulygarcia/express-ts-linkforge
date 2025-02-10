@@ -1,7 +1,8 @@
 import express from 'express'
 import {body} from 'express-validator'
 import { handleInputErrors } from '../middleware/validation';
-import { login, registerUser } from '../handlers';
+import { getUser, login, registerUser, updateUser } from '../handlers';
+import { authMiddleware } from '../middleware/auth';
 
 const router = express.Router();
 
@@ -40,6 +41,20 @@ router.post('/login',
     handleInputErrors,
 
     login
+);
+
+router.get('/user', authMiddleware, getUser);
+
+router.patch('/user', 
+    body('handle')
+    .isString().withMessage('Invalid handler')
+    .notEmpty().withMessage('Handle cannot be empty'),
+
+    body('description')
+    .isLength({ min: 3, max: 60 }).withMessage('Description should have at least 3 characters'),
+    handleInputErrors,
+    authMiddleware, 
+    updateUser
 );
 
 export default router

@@ -93,3 +93,43 @@ export const login = async (req:Request, res:Response) => {
         token: userToken
     });
 }
+
+export const getUser = async (req:Request, res:Response) => {
+    const user = req.user;
+
+    res.json(
+        user
+    )
+}
+
+export const updateUser = async (req:Request, res:Response) => {
+    try {
+        const {description} = req.body;
+
+        const handle = slug(req.body.handle, '');
+
+        if(await User.findOne({handle: handle})){
+            const error = new Error('This handle is not available');
+
+            return res.status(409).json({
+                msg : error.message
+            })
+        }
+        //all ok, update
+        req.user.description = description;
+        req.user.handle = handle;
+
+        await req.user.save();
+
+        res.json({
+            msg: "Updated correctly"
+        })
+
+    } catch (e) {
+        const error = new Error('Could not update user');
+
+        return res.status(500).json({
+            msg : error.message
+        })
+    }
+}

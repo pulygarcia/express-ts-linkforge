@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import { db } from './config/db';
 import cors from 'cors'
 
-import authRoutes from './routes/authRoutes'
+import authRoutes from './routes/router'
 import { corsConfig } from './config/cors';
 
 //allow reading enviornment variables
