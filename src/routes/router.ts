@@ -1,7 +1,7 @@
 import express from 'express'
 import {body} from 'express-validator'
 import { handleInputErrors } from '../middleware/validation';
-import { getUser, login, registerUser, updateUser } from '../handlers';
+import { getUser, login, registerUser, updateUser, uploadUserImage } from '../handlers';
 import { authMiddleware } from '../middleware/auth';
 
 const router = express.Router();
@@ -56,5 +56,7 @@ router.patch('/user',
     authMiddleware, 
     updateUser
 );
+
+router.post('/user/image', authMiddleware, uploadUserImage);
 
 export default router

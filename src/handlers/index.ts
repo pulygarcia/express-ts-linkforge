@@ -1,8 +1,11 @@
-import {Request, Response} from "express";
+import {NextFunction, Request, Response} from "express";
 import { createJWT } from "../utils/jwt";
 import slug from "slug";
+import formidable from "formidable";
 import User from "../schemas/User.model";
 import { hashPassword, checkPassword } from "../utils/auth";
+import cloudinary from '../config/cloudinary'
+import { v4 as uuid } from "uuid";
 
 
 export const registerUser = async (req:Request, res:Response) => {
@@ -127,6 +130,49 @@ export const updateUser = async (req:Request, res:Response) => {
 
     } catch (e) {
         const error = new Error('Could not update user');
+
+        return res.status(500).json({
+            msg : error.message
+        })
+    }
+}
+
+export const uploadUserImage = async (req:Request, res:Response, next:NextFunction) => {
+    const form = formidable({})
+    cloudinary.config({ 
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+        api_key: process.env.CLOUDINARY_API_KEY, 
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+
+    try {
+        form.parse(req, (err, fields, files) => {
+            if (!files.file || files.file.length === 0) {
+                return res.status(400).json({ error: "No file uploaded" });
+            }
+            const file = files.file[0].filepath;
+            //console.log(file);
+            
+            // Upload an image
+            cloudinary.uploader.upload(file, {public_id: uuid()}, async function(error, result){
+                if(error){
+                    const error = new Error('Could not upload image');
+                    return res.status(500).json({
+                        msg : error.message
+                    })
+                }
+
+                //save image url in user data wich is in the request thanks to middleware
+                req.user.image = result?.secure_url;
+                await req.user.save();
+                res.json({
+                    image: result?.secure_url
+                })
+            })
+            
+        });
+    } catch (e) {
+     const error = new Error('Could not upload image');
 
         return res.status(500).json({
             msg : error.message
