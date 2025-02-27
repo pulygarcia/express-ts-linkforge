@@ -105,39 +105,44 @@ export const getUser = async (req:Request, res:Response) => {
     )
 }
 
-export const updateUser = async (req:Request, res:Response) => {
+export const updateUser = async (req: Request, res: Response) => {
     try {
-        const {description} = req.body;
+        const { description, handle: newHandle } = req.body;
 
-        const handle = slug(req.body.handle, '');
+        const currentHandle = req.user.handle;  // current user handle
 
-        if(await User.findOne({handle: handle})){
-            const error = new Error('This handle is not available');
+        // if handle don't change is not necessary verify if exists
+        if (newHandle !== currentHandle) {
+            const handle = slug(newHandle, '');
 
-            return res.status(409).json({
-                msg : error.message
-            })
+            // Verificar si el nuevo handle está en uso
+            const existingUser = await User.findOne({ handle: handle });
+            if (existingUser) {
+                const error = new Error('This handle is not available');
+                return res.status(409).json({ msg: error.message });
+            }
+
+            req.user.handle = handle;  // assign the new handle if is valid
         }
-        //all ok, update
+
         req.user.description = description;
-        req.user.handle = handle;
 
         await req.user.save();
 
         res.json({
             msg: "Updated correctly"
-        })
+        });
 
     } catch (e) {
         const error = new Error('Could not update user');
-
         return res.status(500).json({
-            msg : error.message
-        })
+            msg: error.message
+        });
     }
-}
+};
 
-export const uploadUserImage = async (req:Request, res:Response, next:NextFunction) => {
+
+export const uploadUserImage = async (req:Request, res:Response) => {
     const form = formidable({})
     cloudinary.config({ 
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
