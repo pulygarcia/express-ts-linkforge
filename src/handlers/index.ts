@@ -1,4 +1,4 @@
-import {NextFunction, Request, Response} from "express";
+import { Request, Response} from "express";
 import { createJWT } from "../utils/jwt";
 import slug from "slug";
 import formidable from "formidable";
@@ -7,7 +7,7 @@ import { hashPassword, checkPassword } from "../utils/auth";
 import cloudinary from '../config/cloudinary'
 import { v4 as uuid } from "uuid";
 
-
+//AUTH AND USER
 export const registerUser = async (req:Request, res:Response) => {
     if(Object.values(req.body).includes('')){
         const error = new Error('Empty fields not allowed');
@@ -45,7 +45,7 @@ export const registerUser = async (req:Request, res:Response) => {
 
         //user handle using slug
         const handle = slug(req.body.handle || 'user-handle-1', '');
-        //make sure there are not repeated handlers
+        //make sure there are not repeated handler
         if(await User.findOne({handle: handle})){
             const error = new Error('This handle is not available');
 
@@ -55,7 +55,6 @@ export const registerUser = async (req:Request, res:Response) => {
         }
 
         user.handle = handle;
-        
         await user.save();
 
 
@@ -107,7 +106,7 @@ export const getUser = async (req:Request, res:Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
     try {
-        const { description, handle: newHandle } = req.body;
+        const { description, handle: newHandle, links } = req.body;
 
         const currentHandle = req.user.handle;  // current user handle
 
@@ -126,6 +125,7 @@ export const updateUser = async (req: Request, res: Response) => {
         }
 
         req.user.description = description;
+        req.user.links = links;
 
         await req.user.save();
 
@@ -182,5 +182,20 @@ export const uploadUserImage = async (req:Request, res:Response) => {
         return res.status(500).json({
             msg : error.message
         })
+    }
+}
+
+export const getUserByHandle = async (req:Request, res:Response) => {
+    try {
+        const user = (await User.findOne({handle:req.params.handle}).select('-password -_id -__v -email'));
+        res.json({
+            user
+        });
+
+    } catch (e) {
+        const error = new Error(`User with handle ${req.params.handle} not found`);
+        return res.status(404).json({
+            msg: error.message
+        });
     }
 }

@@ -7,6 +7,7 @@ interface IUser {
     password: string
     description: string
     image: string
+    links: string
 }
 
 export const UserSchema:Schema = new mongoose.Schema({
@@ -41,6 +42,10 @@ export const UserSchema:Schema = new mongoose.Schema({
     image: {
         type: String,
         default: ''
+    },
+    links: {
+        type: String,
+        default: '[]'
     },
 })
 

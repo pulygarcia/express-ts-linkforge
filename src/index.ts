@@ -3,7 +3,9 @@ import dotenv from 'dotenv'
 import { db } from './config/db';
 import cors from 'cors'
 
-import authRoutes from './routes/router'
+import authRoutes from './routes/authRoutes'
+import userRoutes from './routes/userRoutes'
+
 import { corsConfig } from './config/cors';
 
 //allow reading enviornment variables
@@ -22,6 +24,7 @@ app.use(express.json()); //allow json format
 
 //Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
 
 
 //Port and app starting
