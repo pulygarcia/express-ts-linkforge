@@ -6,9 +6,9 @@ import { authMiddleware } from '../middleware/auth';
 
 const router = express.Router();
 
-router.get('/user', authMiddleware, getUser);
+router.get('/', authMiddleware, getUser);
 
-router.patch('/user', 
+router.patch('/', 
     body('handle')
     .isString().withMessage('Invalid handler')
     .notEmpty().withMessage('Handle cannot be empty'),
@@ -20,7 +20,7 @@ router.patch('/user',
     updateUser
 );
 
-router.post('/user/image', authMiddleware, uploadUserImage);
+router.post('/image', authMiddleware, uploadUserImage);
 
 router.get('/:handle', authMiddleware, getUserByHandle);
 
