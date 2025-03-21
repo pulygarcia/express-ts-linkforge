@@ -199,3 +199,25 @@ export const getUserByHandle = async (req:Request, res:Response) => {
         });
     }
 }
+
+export const searchByHandle = async (req:Request, res:Response) => {
+    try {
+        const user = await User.findOne({handle: req.body.handle});
+        if(user){
+            const error = new Error('Handle is not available')
+            return res.status(409).json({
+                msg: error.message
+            })
+        };
+
+        return res.status(200).json({
+            msg: 'Handle is available'
+        });
+
+    } catch (e) {
+        const error = new Error(`Has been an error`);
+        return res.status(404).json({
+            msg: error.message
+        });
+    }
+}

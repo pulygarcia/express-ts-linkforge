@@ -1,7 +1,7 @@
 import express from 'express'
 import {body} from 'express-validator'
 import { handleInputErrors } from '../middleware/validation';
-import { getUser,updateUser, uploadUserImage, getUserByHandle } from '../handlers';
+import { getUser,updateUser, uploadUserImage, getUserByHandle, searchByHandle } from '../handlers';
 import { authMiddleware } from '../middleware/auth';
 
 const router = express.Router();
@@ -23,5 +23,12 @@ router.patch('/',
 router.post('/image', authMiddleware, uploadUserImage);
 
 router.get('/:handle', authMiddleware, getUserByHandle);
+
+router.post('/search', 
+    body('handle')
+    .notEmpty().withMessage('Handle cannot be empty'),
+    handleInputErrors, 
+    searchByHandle
+);
 
 export default router
